@@ -1,0 +1,105 @@
+{
+  "product_single_offer_with_strikethrough": {
+    "@context": "https://schema.org/",
+    "@type": "Product",
+    "name": "Waterproof Windbreaker Jacket",
+    "image": ["https://example.com/uploads/coat-1.jpg"],
+    "description": "Two-layer waterproof and windproof breathable jacket...",
+    "sku": "COAT-001",
+    "brand": {
+      "@type": "Brand",
+      "name": "Brand Name"
+    },
+    "category": "Apparel > Outerwear",
+    "offers": {
+      "@type": "Offer",
+      "url": "https://example.com/products/coat-001",
+      "priceCurrency": "USD",
+      "price": "45.00",
+      "validFrom": "2026-10-01T00:00:00Z",
+      "validThrough": "2026-11-30T23:59:59Z",
+      "priceValidUntil": "2026-11-30",
+      "availability": "https://schema.org/InStock",
+      "itemCondition": "https://schema.org/NewCondition",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "priceType": "https://schema.org/StrikethroughPrice",
+        "price": "59.00",
+        "priceCurrency": "USD"
+      }
+    }
+  },
+  "product_group_multi_variant": {
+    "@context": "https://schema.org/",
+    "@type": "ProductGroup",
+    "name": "Waterproof Windbreaker Jacket",
+    "description": "Two-layer waterproof and windproof breathable jacket...",
+    "url": "https://example.com/products/coat-001",
+    "productGroupID": "101",
+    "brand": {
+      "@type": "Brand",
+      "name": "Brand Name"
+    },
+    "variesBy": [
+      "https://schema.org/color",
+      "https://schema.org/size"
+    ],
+    "hasVariant": [
+      {
+        "@type": "Product",
+        "sku": "COAT-BLK-M",
+        "name": "Waterproof Windbreaker Jacket - Black / M",
+        "color": "Black",
+        "size": "M",
+        "image": "https://example.com/uploads/coat-1.jpg",
+        "offers": {
+          "@type": "Offer",
+          "url": "https://example.com/products/coat-001?variant=501",
+          "priceCurrency": "USD",
+          "price": "45.00",
+          "availability": "https://schema.org/InStock",
+          "itemCondition": "https://schema.org/NewCondition"
+        }
+      }
+    ]
+  },
+  "website_and_organization_graph": {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://example.com/#website",
+        "name": "Brand Name",
+        "url": "https://example.com/",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "https://example.com/search?q={search_term_string}"
+          },
+          "query-input": "required name=search_term_string"
+        },
+        "publisher": {
+          "@id": "https://example.com/#organization"
+        }
+      },
+      {
+        "@type": "Organization",
+        "@id": "https://example.com/#organization",
+        "url": "https://example.com/",
+        "name": "Brand Name",
+        "logo": {
+          "@type": "ImageObject",
+          "contentUrl": "https://example.com/logo.png"
+        },
+        "contactPoint": {
+          "@type": "ContactPoint",
+          "contactType": "customer support",
+          "telephone": "+1-800-555-0199",
+          "email": "support@example.com",
+          "url": "https://example.com/contact"
+        }
+      }
+    ]
+  }
+}

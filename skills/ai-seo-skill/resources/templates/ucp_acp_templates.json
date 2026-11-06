@@ -1,0 +1,56 @@
+{
+  "ucp_discovery_response": {
+    "ucp": {
+      "version": "2026-08-25",
+      "services": {
+        "dev.ucp.shopping.catalog": [
+          {
+            "version": "2026-08-25",
+            "transport": "rest",
+            "endpoint": "https://example.com/catalog"
+          }
+        ]
+      },
+      "payment_handlers": {},
+      "capabilities": {
+        "dev.ucp.shopping.catalog.search": [
+          {
+            "version": "2026-08-25",
+            "schema": "https://ucp.dev/schemas/shopping/catalog_search.json"
+          }
+        ],
+        "dev.ucp.shopping.catalog.lookup": [
+          {
+            "version": "2026-08-25",
+            "schema": "https://ucp.dev/schemas/shopping/catalog_lookup.json"
+          }
+        ]
+      }
+    },
+    "signing_keys": [
+      {
+        "kty": "EC",
+        "crv": "P-256",
+        "x": "f83OJ3D2xF1Bg8vub9tLe1gHMzV76e8Tus9uPHvRVEU",
+        "y": "x_FEzRu9m36HLN_tue659LNpXW6pCyStikYjKIWI5a0",
+        "kid": "ucp-key-2026",
+        "use": "sig",
+        "alg": "ES256"
+      }
+    ]
+  },
+  "acp_discovery_response": {
+    "protocol": {
+      "name": "acp",
+      "version": "2026-04-17",
+      "supported_versions": ["2026-04-17"],
+      "documentation_url": "https://agenticcommerce.dev"
+    },
+    "api_base_url": "https://example.com/acp",
+    "transports": ["rest"],
+    "capabilities": {
+      "services": ["checkout"]
+    }
+  }
+}
+
