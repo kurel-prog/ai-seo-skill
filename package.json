@@ -1,0 +1,57 @@
+{
+  "name": "ai-seo-skill",
+  "version": "1.1.0",
+  "description": "2026 AI SEO, GEO/AEO (llmstxt.org v2 & Shadow Corpus), Schema.org JSON-LD, Core Web Vitals, Streamable HTTP MCP Server & Agentic Commerce (UCP / OpenAI ACP) Agent Skill for Google Antigravity, Claude Code, Cursor, OpenAI Codex & Windsurf.",
+  "homepage": "https://github.com/kurel-prog/ai-seo-skill#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kurel-prog/ai-seo-skill.git"
+  },
+  "bugs": {
+    "url": "https://github.com/kurel-prog/ai-seo-skill/issues"
+  },
+  "license": "MIT",
+  "author": "kurel-prog (https://github.com/kurel-prog)",
+  "files": [
+    "SKILL.md",
+    "README.md",
+    "LICENSE",
+    "references/",
+    "resources/"
+  ],
+  "keywords": [
+    "agent-skill",
+    "agent-skills",
+    "ai-seo",
+    "technical-seo",
+    "geo",
+    "aeo",
+    "generative-engine-optimization",
+    "answer-engine-optimization",
+    "llms-txt",
+    "llmstxt",
+    "shadow-corpus",
+    "json-ld",
+    "schema-org",
+    "structured-data",
+    "product-group",
+    "sitemap-xml",
+    "robots-txt",
+    "open-graph",
+    "hreflang",
+    "core-web-vitals",
+    "mcp",
+    "mcp-server",
+    "model-context-protocol",
+    "streamable-http",
+    "agentic-commerce",
+    "ucp",
+    "universal-commerce-protocol",
+    "openai-acp",
+    "claude-code",
+    "google-antigravity",
+    "cursor",
+    "openai-codex",
+    "windsurf"
+  ]
+}
