@@ -160,46 +160,100 @@ To maximize citation frequency in **Google AI Overviews, ChatGPT Search, Perplex
 
 ---
 
-## 5. `/robots.txt` Policy Templates
+## 5. `/robots.txt` Policy Templates & CDN/WAF Crawler Unblocking
 
-* **Policy A — Allow AI Search/Citation Bots, Block AI Training Crawlers (Recommended for `CONTENT_PUBLISHING` / `SAAS_PLATFORM` / `GENERIC_WEB`)**:
-  ```text
-  User-agent: OAI-SearchBot
-  User-agent: ChatGPT-User
-  User-agent: PerplexityBot
-  User-agent: Claude-SearchBot
-  User-agent: Applebot
-  User-agent: Googlebot
-  User-agent: Bingbot
-  Allow: /
+### 5.1. Policy A (Recommended Default) — Unlock All 10 Major Search & AI Crawler Ecosystems (`Allow: /`)
+Explicitly grants `Allow: /` across all **10 major crawler families** tracked by Cloudflare AI Audit & modern search engines so `Allowed requests` are never blocked by default:
+1. **Google (`Googlebot` +2)**: `Googlebot`, `Google-Extended`, `GoogleOther`
+2. **OpenAI (`ChatGPT-User` +2)**: `ChatGPT-User`, `OAI-SearchBot`, `GPTBot`
+3. **Microsoft (`BingBot`)**: `Bingbot`, `BingBot`
+4. **Anthropic (`ClaudeBot` +2)**: `ClaudeBot`, `Claude-SearchBot`, `Claude-User`
+5. **Apple (`Applebot`)**: `Applebot`, `Applebot-Extended`
+6. **ByteDance (`Bytespider` +2)**: `Bytespider`, `TikTokSpider`, `ByteDance`
+7. **Perplexity (`PerplexityBot` +1)**: `PerplexityBot`, `Perplexity-User`
+8. **Common Crawl (`CCBot`)**: `CCBot`
+9. **DuckDuckGo (`DuckAssistBot`)**: `DuckAssistBot`
+10. **Huawei (`PetalBot`)**: `PetalBot`
+*(+ Meta `Meta-ExternalAgent`, `FacebookBot`)*
 
-  User-agent: GPTBot
-  User-agent: CCBot
-  User-agent: ClaudeBot
-  User-agent: Google-Extended
-  User-agent: Applebot-Extended
-  User-agent: Meta-ExternalAgent
-  User-agent: Bytespider
-  Disallow: /
+```text
+User-agent: Googlebot
+User-agent: Google-Extended
+User-agent: GoogleOther
+User-agent: ChatGPT-User
+User-agent: OAI-SearchBot
+User-agent: GPTBot
+User-agent: Bingbot
+User-agent: BingBot
+User-agent: ClaudeBot
+User-agent: Claude-SearchBot
+User-agent: Claude-User
+User-agent: Applebot
+User-agent: Applebot-Extended
+User-agent: Bytespider
+User-agent: TikTokSpider
+User-agent: ByteDance
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+User-agent: CCBot
+User-agent: DuckAssistBot
+User-agent: PetalBot
+User-agent: Meta-ExternalAgent
+User-agent: FacebookBot
+Allow: /
+Disallow: /admin/
+Disallow: /account/
+Disallow: /wallet/
+Disallow: /checkout/
 
-  User-agent: *
-  Disallow: /admin/
-  Disallow: /account/
-  Disallow: /api/private/
-  Allow: /llms.txt
-  Allow: /llms-full.txt
-  Sitemap: https://example.com/sitemap.xml
-  ```
-* **Policy B — Open to All AI Bots & Commerce Agents (Recommended for `COMMERCE` / `RESERVATION`)**:
-  ```text
-  User-agent: *
-  Disallow: /admin/
-  Disallow: /cart/
-  Disallow: /checkout/
-  Allow: /.well-known/ucp
-  Allow: /.well-known/acp.json
-  Allow: /catalog/
-  Allow: /llms.txt
-  Allow: /llms-full.txt
-  Sitemap: https://example.com/sitemap.xml
-  ```
+User-agent: *
+Allow: /
+Allow: /llms.txt
+Allow: /llms-full.txt
+Allow: /.well-known/ucp
+Allow: /.well-known/acp.json
+Disallow: /admin/
+Disallow: /account/
+Disallow: /wallet/
+Disallow: /checkout/
+Sitemap: https://example.com/sitemap.xml
+```
+
+### 5.2. Policy B (Optional Strict Training Opt-Out) — Allow AI Search/Citation Bots Only, Block Model Training Scrapers
+Use **only** when the site owner explicitly requests blocking LLM pre-training dataset crawlers while keeping search citations open:
+```text
+User-agent: Googlebot
+User-agent: Bingbot
+User-agent: BingBot
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+User-agent: Claude-SearchBot
+User-agent: Claude-User
+User-agent: Applebot
+User-agent: DuckAssistBot
+User-agent: PetalBot
+Allow: /
+
+User-agent: GPTBot
+User-agent: CCBot
+User-agent: ClaudeBot
+User-agent: Google-Extended
+User-agent: Applebot-Extended
+User-agent: Bytespider
+User-agent: Meta-ExternalAgent
+Disallow: /
+
+User-agent: *
+Disallow: /admin/
+Allow: /llms.txt
+Allow: /llms-full.txt
+Sitemap: https://example.com/sitemap.xml
+```
+
+### 5.3. Troubleshooting `Allowed requests: 0` on Cloudflare / WAF Dashboards
+If `/robots.txt` allows AI crawlers (`Allow: /`) but your CDN/WAF dashboard still shows `Allowed requests: 0`:
+1. **Cloudflare AI Audit / Block AI Bots**: In Cloudflare Dashboard → **Security → Bots** (or **AI Audit**), ensure **"Block AI Scrapers and Crawlers"** is turned **OFF** (or set to *Allow* for verified AI crawlers).
+2. **Cloudflare Managed `robots.txt` / Content Signals**: Disable Cloudflare's automatic `robots.txt` injection (*"Instruct AI bot traffic with robots.txt"*) if it prepends `Disallow: /` for `GPTBot`, `ClaudeBot`, `CCBot`, `Bytespider`, and `Google-Extended`.
+3. **Super Bot Fight Mode / JS Challenge**: Ensure WAF rules bypass *Managed Challenge / JS Challenge* for verified bots (`cf.bot_management.verified_bot` or known AI crawler user-agents) on `/robots.txt`, `/sitemap.xml`, `/llms.txt`, `/llms-full.txt`, and public content routes.
