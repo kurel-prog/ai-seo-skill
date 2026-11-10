@@ -200,6 +200,7 @@ User-agent: DuckAssistBot
 User-agent: PetalBot
 User-agent: Meta-ExternalAgent
 User-agent: FacebookBot
+Content-Signal: search=yes, ai-input=yes, ai-train=no
 Allow: /
 Disallow: /admin/
 Disallow: /account/
@@ -207,11 +208,17 @@ Disallow: /wallet/
 Disallow: /checkout/
 
 User-agent: *
+Content-Signal: search=yes, ai-input=yes, ai-train=no
 Allow: /
 Allow: /llms.txt
 Allow: /llms-full.txt
+Allow: /auth.md
+Allow: /.well-known/
 Allow: /.well-known/ucp
 Allow: /.well-known/acp.json
+Allow: /.well-known/api-catalog
+Allow: /.well-known/agent-card.json
+Allow: /.well-known/mcp/server-card.json
 Disallow: /admin/
 Disallow: /account/
 Disallow: /wallet/
@@ -257,3 +264,60 @@ If `/robots.txt` allows AI crawlers (`Allow: /`) but your CDN/WAF dashboard stil
 1. **Cloudflare AI Audit / Block AI Bots**: In Cloudflare Dashboard → **Security → Bots** (or **AI Audit**), ensure **"Block AI Scrapers and Crawlers"** is turned **OFF** (or set to *Allow* for verified AI crawlers).
 2. **Cloudflare Managed `robots.txt` / Content Signals**: Disable Cloudflare's automatic `robots.txt` injection (*"Instruct AI bot traffic with robots.txt"*) if it prepends `Disallow: /` for `GPTBot`, `ClaudeBot`, `CCBot`, `Bytespider`, and `Google-Extended`.
 3. **Super Bot Fight Mode / JS Challenge**: Ensure WAF rules bypass *Managed Challenge / JS Challenge* for verified bots (`cf.bot_management.verified_bot` or known AI crawler user-agents) on `/robots.txt`, `/sitemap.xml`, `/llms.txt`, `/llms-full.txt`, and public content routes.
+
+---
+
+## 6. Cloudflare Agent Readiness Audit (`isitagentready.com`) — Level 1, Level 2 & Level 3 Specifications
+
+### 6.1. Level 1 — Content Signals & Markdown Content Negotiation
+1. **`Content-Signal` Directive & HTTP Header**:
+   * Declare how automated systems may use site content in both `/robots.txt` and HTTP response headers:
+     ```http
+     Content-Signal: search=yes, ai-input=yes, ai-train=no
+     ```
+2. **Markdown Content Negotiation (`Accept: text/markdown`)**:
+   * When an AI agent requests `/` (or any HTML route) with `Accept: text/markdown`, serve the clean Markdown twin (`/llms.txt` or `/index.md`) with:
+     ```http
+     Content-Type: text/markdown; charset=utf-8
+     Vary: Accept
+     Content-Signal: search=yes, ai-input=yes, ai-train=no
+     ```
+   * Nginx gateway rule example:
+     ```nginx
+     location / {
+         if ($http_accept ~* "text/markdown") {
+             rewrite ^ /index.md last;
+         }
+         try_files $uri $uri.html $uri/ /index.html;
+     }
+     ```
+
+### 6.2. Level 2 — Technical Groundwork (`API Catalog`, `Link Headers`, `Auth.md`)
+1. **RFC 9727 API Catalog (`GET /.well-known/api-catalog`)**:
+   * Serve with `Content-Type: application/linkset+json; charset=utf-8` listing `linkset` anchors (`/api`, `/mcp`) with `service-desc`, `service-doc`, `service-meta`, and `status` targets.
+2. **RFC 8288 HTTP `Link` Headers**:
+   * Emit on `/` and discovery endpoints:
+     ```http
+     Link: </.well-known/api-catalog>; rel="api-catalog"; type="application/linkset+json", </llms.txt>; rel="service-doc"; type="text/markdown", </llms.txt>; rel="describedby"; type="text/markdown", </auth.md>; rel="service-meta"; type="text/markdown", </sitemap.xml>; rel="sitemap"; type="application/xml", </.well-known/agent-card.json>; rel="agent-card"; type="application/json", </.well-known/mcp/server-card.json>; rel="mcp-server-card"; type="application/json"
+     ```
+3. **Machine-Readable Authentication Guide (`GET /auth.md` & `GET /.well-known/auth.md`)**:
+   * Serve with `Content-Type: text/markdown; charset=utf-8` documenting public zero-auth routes, ephemeral guest headers, Bearer JWT login flows, and OAuth 2.0 discovery URLs.
+
+### 6.3. Level 3 — Advanced Integration (`OAuth`, `A2A`, `Skills`, `MCP Card`, `Web Bot Auth`, `WebMCP`, `DNS-AID`)
+1. **OAuth 2.0 Discovery (`GET /.well-known/oauth-authorization-server` & `GET /.well-known/openid-configuration`)**:
+   * RFC 8414 JSON metadata (`issuer`, `authorization_endpoint`, `token_endpoint`, `registration_endpoint`, `jwks_uri`, `scopes_supported`, `code_challenge_methods_supported: ["S256"]`).
+2. **OAuth 2.0 Protected Resource (`GET /.well-known/oauth-protected-resource`)**:
+   * RFC 9728 JSON metadata (`resource`, `authorization_servers`, `bearer_methods_supported: ["header"]`, `scopes_supported`).
+3. **A2A Agent Card (`GET /.well-known/agent-card.json` & `GET /.well-known/agent.json`)**:
+   * Agent-to-Agent protocol card declaring `name`, `description`, `url`, `version`, `capabilities`, `authentication`, `defaultInputModes`, `defaultOutputModes`, and `skills[]`.
+4. **Agent Skills Index (`GET /.well-known/agent-skills/index.json` & `GET /.well-known/agent-skills/:slug/SKILL.md`)**:
+   * JSON index of agent skills plus individual Markdown `SKILL.md` files with YAML frontmatter.
+5. **SEP-1649 MCP Server Card (`GET /.well-known/mcp/server-card.json` & `GET /.well-known/mcp.json`)**:
+   * Declares `protocolVersion`, `serverInfo`, `transport` (`streamable-http` at `/mcp`), `authentication`, `capabilities`, and `tools[]` with `readOnlyHint`/`destructiveHint`/`idempotentHint`.
+6. **RFC 9421 Web Bot Auth (`GET /.well-known/http-message-signatures-directory`)**:
+   * Served with `Content-Type: application/http-message-signatures-directory+json; charset=utf-8` containing public `ES256`/`Ed25519` JWK `keys[]` (strictly zero private key `d`).
+7. **W3C WebMCP (`GET /.well-known/webmcp.json` + HTML `<form toolname="..." tooldescription="...">` + `navigator.modelContext`)**:
+   * Link via `<link rel="webmcp" type="application/json" href="https://example.com/.well-known/webmcp.json" />`, annotate interactive `<form>` elements with `toolname` and `tooldescription`, and register browser tools via `navigator.modelContext.registerTool(...)`.
+8. **IETF DNS-AID (`GET /.well-known/dns-aid` & DNS `SVCB`/`TXT` records)**:
+   * Publish `_mcp._agents.<domain>` (`SVCB`) and `_a2a._agents.<domain>` (`TXT`) records alongside `GET /.well-known/dns-aid`.
+   * **Important Reverse-Proxy Rule**: Ensure Nginx/Caddy proxies `location ^~ /.well-known/` to the backend SEO/MCP service rather than letting SPA `try_files` return `index.html`.

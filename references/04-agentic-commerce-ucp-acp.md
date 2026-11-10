@@ -217,3 +217,21 @@
   * Configure base URL and API key via the project's environment/config system (e.g., `ACP_FEED_BASE_URL` and `ACP_FEED_API_KEY`).
   * Send `Authorization: Bearer <API_KEY>`, `Accept: application/json`.
   * Standard ACP Feed endpoints: `POST /feeds`, `GET /feeds/{id}`, `GET /feeds/{id}/products`, `PATCH /feeds/{id}/products` (`{"products": [...]}`).
+
+---
+
+## Part C: Agentic Commerce Payment & Paywall Extensions (`AP2 Protocol`, `MPP`, `x402 Protocol`)
+
+To pass all 5 Commerce checks on Cloudflare's Agent Readiness Audit (`isitagentready.com` — **ACP**, **AP2 Protocol**, **MPP**, **UCP**, **x402 Protocol**):
+
+### 1. AP2 Protocol (`GET /.well-known/ap2.json` & `GET /.well-known/ap2`)
+* Declares **Agent Payments Protocol (AP2)** support for cryptographic checkout mandates (`intentMandateSupported`, `cartMandateSupported`, `paymentMandateSupported`, `signingAlgorithms: ["ES256"]`), catalog/checkout endpoints, ISO 4217 `minorUnitDecimals`, and RFC 9421 `signingKeys`.
+
+### 2. MPP (`GET /.well-known/mpp.json` & `GET /.well-known/mpp`)
+* Declares **Machine Payments Protocol (MPP)** settlement rails (e.g., prepaid integer credit ledger or instant QR rails), currency minor-unit rules (`integerOnly: true`), and quote/status endpoints.
+
+### 3. x402 Protocol (`GET /.well-known/x402.json` & `GET /.well-known/x402`)
+* Declares **HTTP `402 Payment Required` (`x402`)** machine payment rules:
+  * Standard headers: `X-Payment-Required`, `X-Payment`, `X-Payment-Response`.
+  * `freeRoutes[]`: Public zero-cost endpoints (`/llms.txt`, `/llms-full.txt`, `/mcp`, `/*.md`).
+  * `payableRoutes[]`: Protected routes with integer `priceMinor`, `currency`, `featureKey`, and description.

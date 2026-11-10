@@ -54,9 +54,9 @@ The skill automatically detects your project's **Domain Profile** and runs **onl
 
 ### 2. Composable Implementation Layers (`LAYERS_TO_IMPLEMENT`)
 * **`CORE_SEO`** *(Steps 1–3)*: XSS-safe JSON-LD (`@graph` `WebSite` + `Organization`, `BreadcrumbList`, `FAQPage`, plus domain entity), Open Graph (`og:*`), Twitter/X Cards (`twitter:*`), `hreflang` (`+ x-default`), spider-trap-safe paginated canonical URLs, Core Web Vitals & SSR guardrails, and single or tiered XML Sitemaps.
-* **`AI_DISCOVERY`** *(Step 3)*: `llmstxt.org` v2 (`/llms.txt`, `/llms-full.txt`), HTTP `Link` auto-discovery headers (`rel="describedby"`), `.md` Shadow Corpus routes (`rel="alternate"; type="text/markdown"`), Answer-First GEO/AEO on-page formatting, and AI crawler `robots.txt` rules (`OAI-SearchBot`, `ChatGPT-User`, `PerplexityBot`, `Claude-SearchBot` vs. `GPTBot`, `CCBot`, `Google-Extended`).
+* **`AI_DISCOVERY`** *(Step 3)*: `llmstxt.org` v2 (`/llms.txt`, `/llms-full.txt`), HTTP `Link` auto-discovery headers (`rel="api-catalog"`, `rel="service-doc"`, `rel="describedby"`, `rel="agent-card"`, `rel="mcp-server-card"`), `Content-Signal: search=yes, ai-input=yes, ai-train=no`, `Accept: text/markdown` Markdown Negotiation, `.md` Shadow Corpus routes, all 10 major AI crawler ecosystems unlocked in `robots.txt`, plus Cloudflare `isitagentready.com` Level 2 & Level 3 discovery (`/.well-known/api-catalog`, `/auth.md`, OAuth RFC 8414/9728, A2A Agent Card, Skills Index, SEP-1649 MCP Server Card, RFC 9421 Web Bot Auth, WebMCP, DNS-AID).
 * **`MCP_SERVER`** *(Step 4 — Optional)*: Streamable HTTP MCP server (`POST /mcp`) exposing domain-specific search and lookup tools with DNS Rebinding protection.
-* **`AGENTIC_COMMERCE`** *(Step 5 — Optional)*: Universal Commerce Protocol (`/.well-known/ucp` with RFC 9421 JWK `signing_keys`, `/catalog/search`, `/lookup`, `/product`) and OpenAI ACP (`/.well-known/acp.json` & validated `products.jsonl` feed).
+* **`AGENTIC_COMMERCE`** *(Step 5 — Optional)*: Universal Commerce Protocol (`/.well-known/ucp` & `/.well-known/ucp.json` with RFC 9421 JWK `signing_keys`, `/catalog/search`, `/lookup`, `/product`), OpenAI ACP (`/.well-known/acp.json` & validated `products.jsonl` feed), plus AP2 (`/.well-known/ap2.json`), MPP (`/.well-known/mpp.json`), and x402 (`/.well-known/x402.json`).
 
 ---
 
